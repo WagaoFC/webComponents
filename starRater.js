@@ -41,13 +41,13 @@ class starRater extends HTMLElement {
         style.textContent = `
             .star-rater {
                 font-size: 10rem;
+                color: gray;
+                cursor: pointer;
             }
         `
     
         return style
     }
 }
-
-
 
 customElements.define('star-rater', starRater)
