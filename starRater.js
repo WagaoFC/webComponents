@@ -11,9 +11,10 @@ class starRater extends HTMLElement {
         shadow.appendChild(this.styles())
 
         const rater = this.createRater()
-        const stars = this.createStars()
+        this.stars = this.createStars()
+        this.stars.forEach(star => rater.appendChild(star))
 
-        stars.forEach(star => rater.appendChild(star))
+        this.resetRating()
 
         shadow.appendChild(rater)
     }
@@ -21,6 +22,7 @@ class starRater extends HTMLElement {
     createRater() {
         const rater = document.createElement('div')
         rater.classList.add('star-rater')
+        rater.addEventListener('mouseout', this.resetRating.bind(this))
         return rater
     }
 
@@ -30,10 +32,34 @@ class starRater extends HTMLElement {
             star.classList.add('star')
             star.setAttribute('data-value', Number(id) + 1)
             star.innerHTML = '&#9733;'
+
+            star.addEventListener('click', this.setRating.bind(this))
+            star.addEventListener('mouseover', this.ratingHover.bind(this))
             return star
         }
 
         return Array.from({ length: 5 }, createStar)
+    }
+
+    resetRating() {
+        this.currentRatingValue = this.getAttribute('data-rating') || 0
+        this.hightlightRating()
+    }
+
+    setRating(event) {
+        this.setAttribute('data-rating', event.currentTarget.getAttribute('data-value'))
+        
+    }
+
+    ratingHover(event) {
+        this.currentRatingValue = event.currentTarget.getAttribute('data-value')
+        this.hightlightRating()
+    }
+
+    hightlightRating() {
+        this.stars.forEach(star => {
+            star.style.color = this.currentRatingValue >= star.getAttribute('data-value') ? '#f1c40f' : '#bdc3c7'
+        })
     }
     
     styles() {
@@ -41,7 +67,7 @@ class starRater extends HTMLElement {
         style.textContent = `
             .star-rater {
                 font-size: 10rem;
-                color: gray;
+                color: #bdc3c7;
                 cursor: pointer;
             }
         `
